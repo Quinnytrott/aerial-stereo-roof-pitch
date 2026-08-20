@@ -8,8 +8,9 @@ and mismatches remain bounded under the tracked synthetic settings; an
 equal-total-weight shared fit is invariant to duplicating either pair; and
 invalid or ambiguous geometry refuses.
 
-**Population and unit:** deterministic analytic scene/stereo pair. Aggregation is
-by scene, not by correlated reconstructed points.
+**Population and unit:** deterministic analytic synthetic scenes. The unit of
+analysis is a scene; its stereo pairs and reconstructed points are correlated
+within-scene evidence, not independent evaluation samples.
 
 **Ground truth:** the analytic plane used to generate synthetic XYZ and projected
 observations. This is the repository's only accuracy ground truth.
@@ -40,3 +41,17 @@ This validates implementation behavior under an analytic model. Independent
 real-world accuracy requires traceable pitch measurements acquired independently
 of the imagery/calibration system, declared reference uncertainty, multiple roof
 types and conditions, and scene-level error and refusal reporting.
+
+Three evidence levels must remain separate:
+
+1. **Synthetic known-truth validation:** known cameras, known plane, and known
+   pitch verify mathematical and software behavior under the declared fixture.
+2. **Internal real-world consistency:** distinct stereo evidence may recover a
+   similar physical plane, but shared calibration, imagery, scope, or datum errors
+   can agree. A private Ontario case exists at this level and is not included.
+3. **Independent ground truth:** separately measured, traceable roof pitch is
+   required before any real-world accuracy claim.
+
+The tracked noisy case is one fixed seed, one analytic camera arrangement, and
+one planar roof face. It provides neither a population error distribution nor an
+uncertainty interval or generalization evidence.

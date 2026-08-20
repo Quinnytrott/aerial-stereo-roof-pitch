@@ -9,7 +9,7 @@ import numpy as np
 from .camera import PinholeCamera
 from .correspondence import CorrespondenceSet
 from .pitch import pitch_from_plane
-from .plane_fit import PlaneFitRefusal, balanced_shared_fit
+from .plane_fit import PlaneFitRefusal, PlaneFitResult, balanced_shared_fit
 from .point_cloud import QualityThresholds, filter_triangulated_points
 from .triangulation import TriangulationRefusal, triangulate_correspondences
 
@@ -120,7 +120,23 @@ class SyntheticSceneResult:
     detail: dict[str, object]
 
 
-def run_scene(scene: dict[str, object], base_seed: int) -> SyntheticSceneResult:
+@dataclass(frozen=True)
+class SyntheticSceneTrace:
+    """Scientific state from the same scene execution used in the public summary."""
+
+    scene_id: str
+    truth_rise_per_12: float
+    truth_points: np.ndarray
+    pair_clouds: dict[str, np.ndarray]
+    pair_diagnostics: dict[str, object]
+    shared_fit: PlaneFitResult
+    pair_fits: dict[str, PlaneFitResult]
+    residual_threshold: float
+
+
+def run_scene_with_trace(
+    scene: dict[str, object], base_seed: int
+) -> tuple[SyntheticSceneResult, SyntheticSceneTrace | None]:
     scene_id = str(scene.get("id", "unnamed"))
     kind = str(scene.get("kind", "scored"))
     truth = None if kind == "degenerate" else float(scene["rise_per_12"])
@@ -170,17 +186,17 @@ def run_scene(scene: dict[str, object], base_seed: int) -> SyntheticSceneResult:
         )
     except (PlaneFitRefusal, TriangulationRefusal, ValueError) as exc:
         status = "refused" if kind == "degenerate" else "failed"
-        return SyntheticSceneResult(scene_id, truth, status, {"reason": str(exc)})
+        return SyntheticSceneResult(scene_id, truth, status, {"reason": str(exc)}), None
     if kind == "degenerate":
         return SyntheticSceneResult(
             scene_id, None, "failed", {"reason": "degenerate geometry was unexpectedly scored"}
-        )
+        ), None
     shared_pitch = pitch_from_plane(shared.model)
     pair_pitch = {
         pair_id: round(pitch_from_plane(result.model).rise_per_12, 9)
         for pair_id, result in sorted(pair_fits.items())
     }
-    return SyntheticSceneResult(
+    result = SyntheticSceneResult(
         scene_id,
         truth,
         "scored",
@@ -197,6 +213,22 @@ def run_scene(scene: dict[str, object], base_seed: int) -> SyntheticSceneResult:
             "shared_xy_spread_minor": round(shared.xy_spread_minor, 9),
         },
     )
+    trace = SyntheticSceneTrace(
+        scene_id=scene_id,
+        truth_rise_per_12=truth,
+        truth_points=points,
+        pair_clouds=pair_clouds,
+        pair_diagnostics=pair_diagnostics,
+        shared_fit=shared,
+        pair_fits=pair_fits,
+        residual_threshold=float(scene.get("plane_residual_threshold", 0.03)),
+    )
+    return result, trace
+
+
+def run_scene(scene: dict[str, object], base_seed: int) -> SyntheticSceneResult:
+    result, _ = run_scene_with_trace(scene, base_seed)
+    return result
 
 
 def run_experiment(config: dict[str, object]) -> dict[str, object]:
@@ -236,7 +268,7 @@ def run_experiment(config: dict[str, object]) -> dict[str, object]:
             "camera_axes": "x right, y down, z forward",
             "plane": "Z=a(X-Xref)+b(Y-Yref)+Zref",
         },
-        "unit_of_analysis": "synthetic scene/stereo pair; aggregated by scene",
+        "unit_of_analysis": "synthetic scene; stereo pairs and points are within-scene evidence",
         "counts": counts,
         "max_noiseless_absolute_error_rise_per_12": round(max(noiseless_errors, default=0.0), 9),
         "scenes": [

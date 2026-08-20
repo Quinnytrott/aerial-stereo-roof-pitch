@@ -5,10 +5,17 @@ build/
 dist/
 *.egg-info/
 .coverage
+.pytest_cache/
 .DS_Store
 outputs/
 private-data/
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.jp2
 *.tif
 *.tiff
 *.las
 *.laz
+!docs/assets/synthetic-roof-plane-reconstruction.png

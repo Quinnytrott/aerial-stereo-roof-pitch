@@ -16,10 +16,12 @@
   without a separately derived explicit rectified camera/frame model.
 - Camera intrinsics are not automatically transformed for a crop; supplied
   intrinsics must already match the declared observation frame.
-- Artifact-producing CLIs require a unique, non-existing output directory and
-  atomically install the complete staged directory rather than merging outputs.
+- Artifact-producing CLIs require a unique, non-existing output path. Directory
+  outputs are atomically installed from a complete stage rather than merged.
 - Successful stereo runs write point-level audits. Preconditions that fail before
   an output directory is accepted report to stderr but do not yet create a
   durable machine-readable refusal record.
 - No independent real-roof pitch truth, population-level error distribution, or
   operational suitability has been established.
+- The public noisy fixture is a single fixed seed, analytic camera arrangement,
+  and planar roof face; it does not establish generalization or uncertainty.

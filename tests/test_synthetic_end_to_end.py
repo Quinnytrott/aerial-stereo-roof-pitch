@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from aerial_stereo_pitch.config import ConfigError, safe_relative_path
-from aerial_stereo_pitch.synthetic import run_experiment
+from aerial_stereo_pitch.synthetic import run_experiment, run_scene_with_trace
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -25,6 +25,18 @@ class SyntheticEndToEndTests(unittest.TestCase):
         self.assertLess(noisy["absolute_error_rise_per_12"], 0.05)
         refused = next(scene for scene in first["scenes"] if scene["status"] == "refused")
         self.assertIn("fewer than three", refused["reason"])
+
+        noisy_config = next(
+            scene for scene in self.config["scenes"] if scene["id"].startswith("seeded-noise")
+        )
+        traced_result, trace = run_scene_with_trace(noisy_config, self.config["seed"])
+        self.assertEqual(traced_result.detail["recovered_rise_per_12"], 6.002269925)
+        self.assertIsNotNone(trace)
+        self.assertEqual({key: len(value) for key, value in trace.pair_clouds.items()}, {
+            "pair-a": 73,
+            "pair-b": 74,
+        })
+        self.assertEqual(trace.shared_fit.inlier_count, 146)
 
     def test_malformed_config_refuses(self):
         with self.assertRaisesRegex(ValueError, "schema_version"):
@@ -52,6 +64,47 @@ class SyntheticEndToEndTests(unittest.TestCase):
                 check=False,
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertIn("Pair A", completed.stdout)
+            self.assertIn("6.002270", completed.stdout)
+            self.assertIn("refused: fewer than three", completed.stdout)
+
+    def test_no_argument_example_uses_cwd_relative_default(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            completed = subprocess.run(
+                [sys.executable, str(ROOT / "scripts" / "run_example.py")],
+                cwd=temporary,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            output = Path(temporary) / "outputs" / "example"
+            self.assertTrue((output / "summary.json").is_file())
+            self.assertTrue((output / "pitch-profile.svg").is_file())
+
+    def test_example_reports_malformed_config_without_traceback(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            malformed = root / "malformed.json"
+            malformed.write_text("{not json}")
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "run_example.py"),
+                    "--config",
+                    str(malformed),
+                    "--output-dir",
+                    str(root / "output"),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(completed.returncode, 2)
+            self.assertTrue(completed.stderr.startswith("REFUSED:"))
+            self.assertNotIn("Traceback", completed.stderr)
+            self.assertFalse((root / "output").exists())
 
     def test_existing_example_output_refuses_without_mutation(self):
         with tempfile.TemporaryDirectory() as temporary:

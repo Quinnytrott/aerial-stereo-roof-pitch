@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-lock.txt
+          python -m pip install -e ".[test]"
+      - name: Verify
+        run: |
+          pytest -q
+          python -m compileall -q src scripts tests
+          python -c "import aerial_stereo_pitch"
+          python scripts/run_example.py --output-dir "$RUNNER_TEMP/synthetic-example" --check examples/expected_summary.json
+          python scripts/render_synthetic_example.py --output "$RUNNER_TEMP/synthetic-roof-plane-reconstruction.png"

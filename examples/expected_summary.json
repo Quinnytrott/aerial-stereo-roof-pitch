@@ -221,5 +221,5 @@
   ],
   "schema_version": 1,
   "seed": 20260820,
-  "unit_of_analysis": "synthetic scene/stereo pair; aggregated by scene"
+  "unit_of_analysis": "synthetic scene; stereo pairs and points are within-scene evidence"
 }

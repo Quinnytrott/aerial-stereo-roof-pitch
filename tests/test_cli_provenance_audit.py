@@ -348,6 +348,22 @@ class CliProvenanceTests(unittest.TestCase):
             )
             self.assertTrue(all(item["seed"] == 13 for item in result["threshold_stability"]))
 
+    def test_existing_fit_output_refuses_without_mutation(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            pair_a, pair_b, output = root / "a.csv", root / "b.csv", root / "fit.json"
+            write_xyz(pair_a, "pair-a")
+            write_xyz(pair_b, "pair-b")
+            output.write_text("preserve-me\n")
+            completed = subprocess.run(
+                [sys.executable, str(ROOT / "scripts/fit_roof_plane.py"), "--pair-a", str(pair_a),
+                 "--pair-b", str(pair_b), "--output", str(output)],
+                cwd=ROOT, text=True, capture_output=True, check=False,
+            )
+            self.assertEqual(completed.returncode, 2)
+            self.assertEqual(output.read_text(), "preserve-me\n")
+            self.assertIn("REFUSED: --output must be a new path", completed.stderr)
+
     def test_fit_cli_refuses_mismatched_world_or_reused_evidence(self):
         for mode in ("world", "source", "scope", "frame-change"):
             with self.subTest(mode=mode), tempfile.TemporaryDirectory() as temporary:

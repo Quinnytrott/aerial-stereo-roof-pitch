@@ -184,6 +184,9 @@ def main() -> int:
     parser.add_argument("--min-xy-spread", type=float, default=0.25)
     parser.add_argument("--min-footprint-overlap-fraction", type=float, default=0.1)
     args = parser.parse_args()
+    if args.output.exists():
+        print("REFUSED: --output must be a new path", file=sys.stderr)
+        return 2
     try:
         pair_a = read_xyz(args.pair_a)
         pair_b = read_xyz(args.pair_b)
