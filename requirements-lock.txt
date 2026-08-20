@@ -1,0 +1,6 @@
+# Verified synthetic/core environment: CPython 3.12.13 and NumPy 2.3.5.
+# Canonical scientific summary bytes intentionally exclude runtime strings to
+# improve portability. Exact byte reproduction is verified only on CPython
+# 3.12.13 with NumPy 2.3.5. Optional image and plotting extras are not required
+# by the example or tests.
+numpy==2.3.5

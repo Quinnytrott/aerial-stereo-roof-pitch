@@ -1,0 +1,225 @@
+{
+  "conventions": {
+    "camera_axes": "x right, y down, z forward",
+    "pixel_origin": "top-left; x right, y down",
+    "plane": "Z=a(X-Xref)+b(Y-Yref)+Zref",
+    "world_units": "metres"
+  },
+  "counts": {
+    "failed": 0,
+    "missing": 0,
+    "refused": 1,
+    "scored": 6
+  },
+  "experiment": "analytic calibrated stereo roof-plane recovery",
+  "interpretation": "synthetic pipeline correctness; not independent real-world accuracy",
+  "max_noiseless_absolute_error_rise_per_12": 0.0,
+  "scenes": [
+    {
+      "absolute_error_rise_per_12": 0.0,
+      "angle_deg": 0.0,
+      "id": "noiseless-0-in-12",
+      "normal_up": [
+        0.0,
+        -0.0,
+        1.0
+      ],
+      "pair_diagnostics": {
+        "pair-a": {
+          "accepted": 81,
+          "input": 81,
+          "rejection_counts": {}
+        },
+        "pair-b": {
+          "accepted": 81,
+          "input": 81,
+          "rejection_counts": {}
+        }
+      },
+      "pair_rise_per_12": {
+        "pair-a": 0.0,
+        "pair-b": 0.0
+      },
+      "recovered_rise_per_12": 0.0,
+      "shared_inliers": 162,
+      "shared_rms_z": 0.0,
+      "shared_xy_spread_minor": 2.581988897,
+      "status": "scored",
+      "truth_rise_per_12": 0.0
+    },
+    {
+      "absolute_error_rise_per_12": 0.0,
+      "angle_deg": 18.434948823,
+      "id": "noiseless-4-in-12",
+      "normal_up": [
+        -0.316227766,
+        -0.0,
+        0.948683298
+      ],
+      "pair_diagnostics": {
+        "pair-a": {
+          "accepted": 81,
+          "input": 81,
+          "rejection_counts": {}
+        },
+        "pair-b": {
+          "accepted": 81,
+          "input": 81,
+          "rejection_counts": {}
+        }
+      },
+      "pair_rise_per_12": {
+        "pair-a": 4.0,
+        "pair-b": 4.0
+      },
+      "recovered_rise_per_12": 4.0,
+      "shared_inliers": 162,
+      "shared_rms_z": 0.0,
+      "shared_xy_spread_minor": 2.581988897,
+      "status": "scored",
+      "truth_rise_per_12": 4.0
+    },
+    {
+      "absolute_error_rise_per_12": 0.0,
+      "angle_deg": 26.565051177,
+      "id": "noiseless-6-in-12",
+      "normal_up": [
+        -0.447213595,
+        -0.0,
+        0.894427191
+      ],
+      "pair_diagnostics": {
+        "pair-a": {
+          "accepted": 81,
+          "input": 81,
+          "rejection_counts": {}
+        },
+        "pair-b": {
+          "accepted": 81,
+          "input": 81,
+          "rejection_counts": {}
+        }
+      },
+      "pair_rise_per_12": {
+        "pair-a": 6.0,
+        "pair-b": 6.0
+      },
+      "recovered_rise_per_12": 6.0,
+      "shared_inliers": 162,
+      "shared_rms_z": 0.0,
+      "shared_xy_spread_minor": 2.581988897,
+      "status": "scored",
+      "truth_rise_per_12": 6.0
+    },
+    {
+      "absolute_error_rise_per_12": 0.0,
+      "angle_deg": 33.690067526,
+      "id": "noiseless-8-in-12",
+      "normal_up": [
+        -0.554700196,
+        -0.0,
+        0.832050294
+      ],
+      "pair_diagnostics": {
+        "pair-a": {
+          "accepted": 81,
+          "input": 81,
+          "rejection_counts": {}
+        },
+        "pair-b": {
+          "accepted": 81,
+          "input": 81,
+          "rejection_counts": {}
+        }
+      },
+      "pair_rise_per_12": {
+        "pair-a": 8.0,
+        "pair-b": 8.0
+      },
+      "recovered_rise_per_12": 8.0,
+      "shared_inliers": 162,
+      "shared_rms_z": 0.0,
+      "shared_xy_spread_minor": 2.581988897,
+      "status": "scored",
+      "truth_rise_per_12": 8.0
+    },
+    {
+      "absolute_error_rise_per_12": 0.0,
+      "angle_deg": 45.0,
+      "id": "noiseless-12-in-12",
+      "normal_up": [
+        -0.707106781,
+        0.0,
+        0.707106781
+      ],
+      "pair_diagnostics": {
+        "pair-a": {
+          "accepted": 81,
+          "input": 81,
+          "rejection_counts": {}
+        },
+        "pair-b": {
+          "accepted": 81,
+          "input": 81,
+          "rejection_counts": {}
+        }
+      },
+      "pair_rise_per_12": {
+        "pair-a": 12.0,
+        "pair-b": 12.0
+      },
+      "recovered_rise_per_12": 12.0,
+      "shared_inliers": 162,
+      "shared_rms_z": 0.0,
+      "shared_xy_spread_minor": 2.581988897,
+      "status": "scored",
+      "truth_rise_per_12": 12.0
+    },
+    {
+      "absolute_error_rise_per_12": 0.002269925,
+      "angle_deg": 26.573720994,
+      "id": "seeded-noise-and-outliers-6-in-12",
+      "normal_up": [
+        -0.447348928,
+        5.9825e-05,
+        0.89435951
+      ],
+      "pair_diagnostics": {
+        "pair-a": {
+          "accepted": 73,
+          "input": 81,
+          "rejection_counts": {
+            "ray_miss_too_large": 8,
+            "reprojection_error_too_large": 8
+          }
+        },
+        "pair-b": {
+          "accepted": 74,
+          "input": 81,
+          "rejection_counts": {
+            "ray_miss_too_large": 7,
+            "reprojection_error_too_large": 7
+          }
+        }
+      },
+      "pair_rise_per_12": {
+        "pair-a": 6.002857804,
+        "pair-b": 6.001559583
+      },
+      "recovered_rise_per_12": 6.002269925,
+      "shared_inliers": 146,
+      "shared_rms_z": 0.007407865,
+      "shared_xy_spread_minor": 2.577397135,
+      "status": "scored",
+      "truth_rise_per_12": 6.0
+    },
+    {
+      "id": "ambiguous-near-zero-baseline",
+      "reason": "fewer than three accepted XYZ points (intersection_angle_too_small=81)",
+      "status": "refused"
+    }
+  ],
+  "schema_version": 1,
+  "seed": 20260820,
+  "unit_of_analysis": "synthetic scene/stereo pair; aggregated by scene"
+}

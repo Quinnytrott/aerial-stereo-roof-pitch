@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aerial-stereo-roof-pitch"
+version = "0.1.0"
+description = "Transparent synthetic validation of calibrated stereo roof-plane reconstruction"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+authors = [{name = "Quinton Trott"}]
+dependencies = ["numpy>=2.3,<3"]
+
+[project.optional-dependencies]
+images = ["opencv-python-headless>=4.10,<5"]
+plots = ["matplotlib>=3.9,<4"]
+dev = []
+
+[tool.setuptools.packages.find]
+where = ["src"]

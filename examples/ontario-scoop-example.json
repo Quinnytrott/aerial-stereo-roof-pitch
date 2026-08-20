@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "dataset": {
+    "title": "South Central Ontario Orthophotography Project (SCOOP) 2023",
+    "owner": "Ontario Ministry of Natural Resources / Land Information Ontario",
+    "licence": "Open Government Licence – Ontario",
+    "attribution": "Contains information licensed under the Open Government Licence – Ontario.",
+    "official_record": "https://geohub.lio.gov.on.ca/maps/a17b2922c68a4ee2ac3f3a1103b4ca69/about"
+  },
+  "rights_acknowledged": false,
+  "private_data_root": "private-data/ontario-scoop",
+  "required_paths": [
+    "imagery/pair-a-left.tif",
+    "imagery/pair-a-right.tif",
+    "imagery/pair-b-left.tif",
+    "imagery/pair-b-right.tif",
+    "orientation/cameras.json"
+  ],
+  "camera_and_frame_contract": {
+    "world_units": "metres",
+    "pixel_convention": "top-left origin; x right; y down",
+    "distortion_corrected_required": true,
+    "required_lineage_fields": [
+      "pair_id",
+      "roof_face_scope_id",
+      "world_frame_id",
+      "camera_id",
+      "source_id",
+      "frame_id"
+    ],
+    "required_crop_transform_fields": [
+      "source_id",
+      "source_size",
+      "crop_origin",
+      "crop_size",
+      "output_size"
+    ]
+  },
+  "publication": {
+    "include_source_or_derived_images": false,
+    "review_status": "review-pending"
+  }
+}

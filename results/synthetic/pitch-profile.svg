@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="402" viewBox="0 0 760 402">
+<rect width="100%" height="100%" fill="white"/>
+<text x="10" y="25" font-size="18" font-family="sans-serif">Synthetic truth vs recovered pitch (x/12)</text>
+<g font-family="sans-serif">
+<text x="10" y="69" font-size="13">noiseless-0-in-12</text><line x1="170" y1="55" x2="170.000" y2="55" stroke="#2563eb" stroke-width="8"/><circle cx="170.000" cy="55" r="6" fill="#dc2626"/>
+<text x="10" y="121" font-size="13">noiseless-4-in-12</text><line x1="170" y1="107" x2="336.667" y2="107" stroke="#2563eb" stroke-width="8"/><circle cx="336.667" cy="107" r="6" fill="#dc2626"/>
+<text x="10" y="173" font-size="13">noiseless-6-in-12</text><line x1="170" y1="159" x2="420.000" y2="159" stroke="#2563eb" stroke-width="8"/><circle cx="420.000" cy="159" r="6" fill="#dc2626"/>
+<text x="10" y="225" font-size="13">noiseless-8-in-12</text><line x1="170" y1="211" x2="503.333" y2="211" stroke="#2563eb" stroke-width="8"/><circle cx="503.333" cy="211" r="6" fill="#dc2626"/>
+<text x="10" y="277" font-size="13">noiseless-12-in-12</text><line x1="170" y1="263" x2="670.000" y2="263" stroke="#2563eb" stroke-width="8"/><circle cx="670.000" cy="263" r="6" fill="#dc2626"/>
+<text x="10" y="329" font-size="13">seeded-noise-and-outliers-6-in-12</text><line x1="170" y1="315" x2="420.000" y2="315" stroke="#2563eb" stroke-width="8"/><circle cx="420.095" cy="315" r="6" fill="#dc2626"/>
+</g>
+<text x="170" y="45" font-size="12" fill="#2563eb">blue = analytic truth</text>
+<text x="350" y="45" font-size="12" fill="#dc2626">red = recovered</text>
+</svg>

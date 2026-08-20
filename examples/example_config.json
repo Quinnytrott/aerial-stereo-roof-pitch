@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "seed": 20260820,
+  "scenes": [
+    {"id": "noiseless-0-in-12", "rise_per_12": 0.0},
+    {"id": "noiseless-4-in-12", "rise_per_12": 4.0},
+    {"id": "noiseless-6-in-12", "rise_per_12": 6.0},
+    {"id": "noiseless-8-in-12", "rise_per_12": 8.0},
+    {"id": "noiseless-12-in-12", "rise_per_12": 12.0},
+    {
+      "id": "seeded-noise-and-outliers-6-in-12",
+      "rise_per_12": 6.0,
+      "noise_px": 0.15,
+      "outlier_fraction": 0.1,
+      "seed_offset": 91,
+      "plane_residual_threshold": 0.03,
+      "ransac_iterations": 400,
+      "min_support_fraction": 0.6
+    },
+    {
+      "id": "ambiguous-near-zero-baseline",
+      "kind": "degenerate",
+      "min_intersection_angle_deg": 1.0
+    }
+  ]
+}
