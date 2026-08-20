@@ -14,6 +14,13 @@ from .point_cloud import QualityThresholds, filter_triangulated_points
 from .triangulation import TriangulationRefusal, triangulate_correspondences
 
 
+def canonical_rounded_float(value: float, digits: int = 9) -> float:
+    """Round a public synthetic result while canonicalizing signed zero."""
+
+    rounded = round(float(value), digits)
+    return 0.0 if rounded == 0.0 else rounded
+
+
 def look_at_camera(camera_id: str, center: np.ndarray, target: np.ndarray) -> PinholeCamera:
     forward = target - center
     forward /= np.linalg.norm(forward)
@@ -193,7 +200,7 @@ def run_scene_with_trace(
         ), None
     shared_pitch = pitch_from_plane(shared.model)
     pair_pitch = {
-        pair_id: round(pitch_from_plane(result.model).rise_per_12, 9)
+        pair_id: canonical_rounded_float(pitch_from_plane(result.model).rise_per_12)
         for pair_id, result in sorted(pair_fits.items())
     }
     result = SyntheticSceneResult(
@@ -202,15 +209,17 @@ def run_scene_with_trace(
         "scored",
         {
             "truth_rise_per_12": truth,
-            "recovered_rise_per_12": round(shared_pitch.rise_per_12, 9),
-            "absolute_error_rise_per_12": round(abs(shared_pitch.rise_per_12 - truth), 9),
-            "angle_deg": round(shared_pitch.angle_deg, 9),
-            "normal_up": [round(value, 9) for value in shared_pitch.normal_up],
+            "recovered_rise_per_12": canonical_rounded_float(shared_pitch.rise_per_12),
+            "absolute_error_rise_per_12": canonical_rounded_float(
+                abs(shared_pitch.rise_per_12 - truth)
+            ),
+            "angle_deg": canonical_rounded_float(shared_pitch.angle_deg),
+            "normal_up": [canonical_rounded_float(value) for value in shared_pitch.normal_up],
             "pair_rise_per_12": pair_pitch,
             "pair_diagnostics": pair_diagnostics,
             "shared_inliers": shared.inlier_count,
-            "shared_rms_z": round(shared.rms_z, 9),
-            "shared_xy_spread_minor": round(shared.xy_spread_minor, 9),
+            "shared_rms_z": canonical_rounded_float(shared.rms_z),
+            "shared_xy_spread_minor": canonical_rounded_float(shared.xy_spread_minor),
         },
     )
     trace = SyntheticSceneTrace(
@@ -270,7 +279,9 @@ def run_experiment(config: dict[str, object]) -> dict[str, object]:
         },
         "unit_of_analysis": "synthetic scene; stereo pairs and points are within-scene evidence",
         "counts": counts,
-        "max_noiseless_absolute_error_rise_per_12": round(max(noiseless_errors, default=0.0), 9),
+        "max_noiseless_absolute_error_rise_per_12": canonical_rounded_float(
+            max(noiseless_errors, default=0.0)
+        ),
         "scenes": [
             {
                 "id": result.scene_id,

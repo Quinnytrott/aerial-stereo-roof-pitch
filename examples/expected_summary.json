@@ -21,7 +21,7 @@
       "id": "noiseless-0-in-12",
       "normal_up": [
         0.0,
-        -0.0,
+        0.0,
         1.0
       ],
       "pair_diagnostics": {
@@ -53,7 +53,7 @@
       "id": "noiseless-4-in-12",
       "normal_up": [
         -0.316227766,
-        -0.0,
+        0.0,
         0.948683298
       ],
       "pair_diagnostics": {
@@ -85,7 +85,7 @@
       "id": "noiseless-6-in-12",
       "normal_up": [
         -0.447213595,
-        -0.0,
+        0.0,
         0.894427191
       ],
       "pair_diagnostics": {
@@ -117,7 +117,7 @@
       "id": "noiseless-8-in-12",
       "normal_up": [
         -0.554700196,
-        -0.0,
+        0.0,
         0.832050294
       ],
       "pair_diagnostics": {

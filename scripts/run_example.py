@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import json
+import math
 import os
 import shutil
 import sys
@@ -16,6 +18,105 @@ sys.path.insert(0, str(ROOT / "src"))
 from aerial_stereo_pitch.config import ConfigError, load_json, stable_json_text  # noqa: E402
 from aerial_stereo_pitch.diagnostics import write_pitch_profile_svg, write_summary  # noqa: E402
 from aerial_stereo_pitch.synthetic import run_experiment  # noqa: E402
+
+_MISSING = object()
+_MAX_SEMANTIC_DIFFERENCES = 3
+
+
+def _json_path_key(path: str, key: str) -> str:
+    return f"{path}.{key}" if key.isidentifier() else f"{path}[{json.dumps(key)}]"
+
+
+def _anonymous_key_path(path: str, side: str, key: str, index: int) -> str:
+    return f"{path}[<{side}-only-key#{index},len={len(key)}>]"
+
+
+def _scalar_equal(expected: object, actual: object) -> bool:
+    if type(expected) is not type(actual):
+        return False
+    if isinstance(expected, float):
+        if expected != actual:
+            return False
+        if expected == 0.0:
+            return math.copysign(1.0, expected) == math.copysign(1.0, actual)
+        return True
+    return expected == actual
+
+
+def _semantic_differences(
+    expected: object, actual: object, path: str = "$"
+) -> list[tuple[str, object, object]]:
+    if isinstance(expected, dict) and isinstance(actual, dict):
+        differences: list[tuple[str, object, object]] = []
+        expected_keys = set(expected)
+        actual_keys = set(actual)
+        for key in sorted(expected_keys & actual_keys):
+            child_path = _json_path_key(path, key)
+            differences.extend(_semantic_differences(expected[key], actual[key], child_path))
+        for index, key in enumerate(sorted(expected_keys - actual_keys), start=1):
+            child_path = _anonymous_key_path(path, "expected", key, index)
+            differences.append((child_path, expected[key], _MISSING))
+        for index, key in enumerate(sorted(actual_keys - expected_keys), start=1):
+            child_path = _anonymous_key_path(path, "actual", key, index)
+            differences.append((child_path, _MISSING, actual[key]))
+        return differences
+    if isinstance(expected, list) and isinstance(actual, list):
+        differences = []
+        for index in range(max(len(expected), len(actual))):
+            child_path = f"{path}[{index}]"
+            if index >= len(expected):
+                differences.append((child_path, _MISSING, actual[index]))
+            elif index >= len(actual):
+                differences.append((child_path, expected[index], _MISSING))
+            else:
+                differences.extend(
+                    _semantic_differences(expected[index], actual[index], child_path)
+                )
+        return differences
+    return [] if _scalar_equal(expected, actual) else [(path, expected, actual)]
+
+
+def _redacted_scalar(value: object, *, hide_scalar: bool = False) -> str:
+    if value is _MISSING:
+        return "missing"
+    if isinstance(value, str):
+        return f"string(len={len(value)})"
+    if isinstance(value, dict):
+        return f"object(keys={len(value)})"
+    if isinstance(value, list):
+        return f"array(len={len(value)})"
+    if hide_scalar:
+        if value is None:
+            return "type=null"
+        if isinstance(value, bool):
+            return "type=boolean"
+        if isinstance(value, (int, float)):
+            return "type=number"
+        return f"type={type(value).__name__}"
+    if value is None:
+        return "null"
+    return repr(value)
+
+
+def _mismatch_detail(expected_bytes: bytes, actual: object) -> str:
+    try:
+        expected = json.loads(expected_bytes)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return f"expected file is not valid JSON ({len(expected_bytes)} bytes)"
+    differences = _semantic_differences(expected, actual)
+    if not differences:
+        return "semantic values match; byte formatting differs"
+    rendered = []
+    for path, expected_value, actual_value in differences[:_MAX_SEMANTIC_DIFFERENCES]:
+        hide_scalar = expected_value is _MISSING or actual_value is _MISSING
+        rendered.append(
+            f"{path}: expected {_redacted_scalar(expected_value, hide_scalar=hide_scalar)}, "
+            f"actual {_redacted_scalar(actual_value, hide_scalar=hide_scalar)}"
+        )
+    omitted = len(differences) - len(rendered)
+    if omitted:
+        rendered.append(f"... {omitted} more difference{'s' if omitted != 1 else ''}")
+    return "; ".join(rendered)
 
 
 def _pitch(value: object) -> str:
@@ -88,8 +189,16 @@ def main() -> int:
         summary = run_experiment(load_json(args.config))
         scored = [scene for scene in summary["scenes"] if scene["status"] == "scored"]
         summary_bytes = stable_json_text(summary).encode("utf-8")
-        if args.check is not None and summary_bytes != args.check.read_bytes():
-            raise ValueError(f"summary differs from {args.check}")
+        if args.check is not None:
+            try:
+                expected_bytes = args.check.read_bytes()
+            except OSError as exc:
+                raise ValueError(
+                    f"could not read expected file ({type(exc).__name__})"
+                ) from None
+            if summary_bytes != expected_bytes:
+                detail = _mismatch_detail(expected_bytes, summary)
+                raise ValueError(f"summary differs from expected file: {detail}")
         args.output_dir.parent.mkdir(parents=True, exist_ok=True)
         stage = Path(tempfile.mkdtemp(prefix=".example-stage-", dir=args.output_dir.parent))
         summary_path = stage / "summary.json"
